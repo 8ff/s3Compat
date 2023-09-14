@@ -176,10 +176,10 @@ func rmObject(access_key string, secret string, endpoint string, args []string) 
 }
 ```
 
-## Contributing
+Additionally [s3Compat_test.go](./s3Compat_test.go) contains more examples.
 
+## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 ## License
-
 This project is licensed under the AGPL 3.0 License. See the [LICENSE](LICENSE) file for details.
