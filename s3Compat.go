@@ -392,26 +392,6 @@ func (p *Params) ListObjects() ([]string, error) {
 	return names, nil
 }
 
-// List objects when endpoint restricts us to a specific bucket
-func (p *Params) ListObjectsNoBucket() ([]string, error) {
-	// Set up the input for the ListObjects method.
-	input := &s3.ListObjectsInput{}
-
-	// Call S3's ListObjects method and handle the error (if any).
-	result, err := p.Service.ListObjects(input)
-	if err != nil {
-		return nil, err
-	}
-
-	// Get names of all objects
-	var names []string
-	for _, object := range result.Contents {
-		names = append(names, *object.Key)
-	}
-
-	return names, nil
-}
-
 func New(params Params) (*Params, error) {
 	// Go over all params and if unset set them to defaults
 	if params.REGION == "" {
