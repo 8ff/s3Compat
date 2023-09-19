@@ -27,6 +27,7 @@ func TestNew(t *testing.T) {
 	client, err := New(params)
 	if err != nil {
 		t.Errorf("Error creating client: %s", err)
+		return
 	}
 
 	if client == nil {
@@ -124,6 +125,27 @@ func TestNew(t *testing.T) {
 	err = client.PutObjectStream("test.txt", buffer)
 	if err != nil {
 		t.Fatalf("PutObjectStream failed: %v", err)
+	}
+
+	// Update metadata
+	err = client.SetMetadata("test.txt", map[string]string{"test": "test"})
+	if err != nil {
+		t.Errorf("Error updating metadata: %s", err)
+	}
+
+	// Get metadata
+	metadata, err := client.GetMetadata("test.txt")
+	if err != nil {
+		t.Errorf("Error getting metadata: %s", err)
+	}
+
+	if metadata == nil {
+		t.Errorf("Metadata is nil")
+	}
+
+	// Print metadata
+	for k, v := range metadata {
+		t.Logf("Key: %s, Value: %s", k, v)
 	}
 
 	// Test delete object

@@ -276,6 +276,52 @@ func (p *Params) PutObject(key string, data []byte) error {
 	return nil
 }
 
+// Function that takes key and metadata and updates metadata for that key
+func (p *Params) SetMetadata(key string, metadata map[string]string) error {
+	// Create a context
+	ctx := context.TODO() // Replace with your context if necessary
+
+	// Prepare the CopyObjectInput
+	input := &s3.CopyObjectInput{
+		Bucket:            &p.BUCKET,
+		CopySource:        aws.String(fmt.Sprintf("%s/%s", p.BUCKET, key)),
+		Key:               &key,
+		Metadata:          metadata,
+		MetadataDirective: types.MetadataDirectiveReplace,
+	}
+
+	// Perform the CopyObject operation to update metadata
+	_, err := p.Service.CopyObject(ctx, input)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Function that takes key and returns metadata for that key
+func (p *Params) GetMetadata(key string) (map[string]string, error) {
+	// Create a context
+	ctx := context.TODO() // Replace with your context if necessary
+
+	// Prepare the HeadObjectInput
+	input := &s3.HeadObjectInput{
+		Bucket: &p.BUCKET,
+		Key:    &key,
+	}
+
+	// Call S3's HeadObject method
+	output, err := p.Service.HeadObject(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+
+	// Extract metadata from the output
+	metadata := output.Metadata
+
+	return metadata, nil
+}
+
 // Function that takes key and downloads it from S3
 func (p *Params) GetObject(key string) ([]byte, error) {
 	// Set up the input for the GetObject method.
