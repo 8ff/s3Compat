@@ -65,7 +65,7 @@ func (p *Params) PutObjectStream(key string, data io.Reader) error {
 				Body:       bytes.NewReader(pb),
 				Bucket:     &p.BUCKET,
 				Key:        &key,
-				PartNumber: int32(pn + 1), // part numbers start from 1
+				PartNumber: aws.Int32(int32(pn + 1)), // part numbers start from 1
 				UploadId:   resp.UploadId,
 			})
 
@@ -76,7 +76,7 @@ func (p *Params) PutObjectStream(key string, data io.Reader) error {
 
 			completedParts[pn] = &types.CompletedPart{
 				ETag:       uploadResult.ETag,
-				PartNumber: int32(pn + 1),
+				PartNumber: aws.Int32(int32(pn + 1)),
 			}
 		}(partNum, partBuffer)
 
@@ -171,8 +171,8 @@ func (p *Params) GetObjectStream(key string) (io.ReadCloser, error) {
 	objectSize := headResult.ContentLength
 
 	// Calculate the number of chunks
-	numChunks := int(objectSize / chunkSize)
-	if objectSize%chunkSize != 0 {
+	numChunks := int(*objectSize / chunkSize) // Dereference objectSize before division
+	if *objectSize%chunkSize != 0 {           // Dereference objectSize before modulo
 		numChunks++
 	}
 
@@ -196,7 +196,7 @@ func (p *Params) GetObjectStream(key string) (io.ReadCloser, error) {
 				start := int64(chunkIndex) * chunkSize
 				end := start + chunkSize - 1
 				if chunkIndex == numChunks-1 {
-					end = objectSize - 1
+					end = *objectSize - 1 // Dereference objectSize before subtraction
 				}
 
 				// Create the GetObjectInput with the Range parameter
